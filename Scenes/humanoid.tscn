@@ -1,0 +1,130 @@
+[gd_scene load_steps=10 format=3 uid="uid://bfxdxp2q07i43"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0kfu0"]
+size = Vector3(1, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pw8ka"]
+size = Vector3(1, 2, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_n1bks"]
+size = Vector3(1, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2d7vr"]
+size = Vector3(1, 1, 2)
+
+[sub_resource type="Curve" id="Curve_y3bb0"]
+_data = [Vector2(0, 0.5), 0.0, 7.9999986, 0, 1, Vector2(0.024, 0.692), 7.9999986, 3.2083344, 1, 1, Vector2(0.072, 0.846), 3.2083344, 1.473684, 1, 1, Vector2(0.148, 0.958), 1.473684, 0.45652172, 1, 1, Vector2(0.24, 1), 0.45652172, 0.0, 1, 1, Vector2(0.76, 1), 0.0, -0.45652166, 1, 1, Vector2(0.852, 0.958), -0.45652166, -1.4736844, 1, 1, Vector2(0.928, 0.846), -1.4736844, -3.2083318, 1, 1, Vector2(0.976, 0.692), -3.2083318, -8.000003, 1, 1, Vector2(1, 0.5), -8.000003, 0.0, 1, 0]
+point_count = 10
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o4qt0"]
+rim = 0.23
+subsurf_scatter_strength = 0.35
+refraction_scale = 1.0
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_5j3vi"]
+material = SubResource("StandardMaterial3D_o4qt0")
+radius = 0.6
+radial_steps = 36
+sections = 16
+section_length = 0.075
+section_rings = 5
+curve = SubResource("Curve_y3bb0")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_b5x54"]
+size = Vector3(1, 2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_c4k16"]
+size = Vector3(1, 2, 1)
+
+[node name="Humanoid" type="Node3D"]
+
+[node name="HumanoidRootPart" type="RigidBody3D" parent="."]
+collision_layer = 0
+collision_mask = 0
+mass = 0.001
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HumanoidRootPart"]
+shape = SubResource("BoxShape3D_0kfu0")
+
+[node name="Torso" type="RigidBody3D" parent="."]
+mass = 2.8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Torso"]
+shape = SubResource("BoxShape3D_pw8ka")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Torso"]
+mesh = SubResource("BoxMesh_n1bks")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Torso"]
+node_a = NodePath("../../HumanoidRootPart")
+node_b = NodePath("..")
+
+[node name="Head" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+mass = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Head"]
+shape = SubResource("BoxShape3D_2d7vr")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Head"]
+mesh = SubResource("TubeTrailMesh_5j3vi")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Head"]
+node_a = NodePath("../../Torso")
+node_b = NodePath("..")
+
+[node name="Left Arm" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+mass = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Left Arm"]
+shape = SubResource("BoxShape3D_b5x54")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Left Arm"]
+mesh = SubResource("BoxMesh_c4k16")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Left Arm"]
+node_a = NodePath("../../Torso")
+node_b = NodePath("..")
+
+[node name="Right Arm" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+mass = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Right Arm"]
+shape = SubResource("BoxShape3D_b5x54")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Right Arm"]
+mesh = SubResource("BoxMesh_c4k16")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Right Arm"]
+node_a = NodePath("../../Torso")
+node_b = NodePath("..")
+
+[node name="Left Leg" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0.5)
+mass = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Left Leg"]
+shape = SubResource("BoxShape3D_b5x54")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Left Leg"]
+mesh = SubResource("BoxMesh_c4k16")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Left Leg"]
+node_a = NodePath("../../Torso")
+node_b = NodePath("..")
+
+[node name="Right Leg" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, -0.5)
+mass = 1.4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Right Leg"]
+shape = SubResource("BoxShape3D_b5x54")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Right Leg"]
+mesh = SubResource("BoxMesh_c4k16")
+
+[node name="Generic6DOFJoint3D" type="Generic6DOFJoint3D" parent="Right Leg"]
+node_a = NodePath("../../Torso")
+node_b = NodePath("..")
