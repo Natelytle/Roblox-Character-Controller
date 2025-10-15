@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3 uid="uid://ct0o5n5lkbcm6"]
+
+[ext_resource type="PackedScene" uid="uid://bfxdxp2q07i43" path="res://Scenes/humanoid.tscn" id="1_lc1oi"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lc1oi"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_8od7v"]
+sky_material = SubResource("ProceduralSkyMaterial_lc1oi")
+
+[sub_resource type="Environment" id="Environment_qc4db"]
+background_mode = 2
+sky = SubResource("Sky_8od7v")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8od7v"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qc4db"]
+size = Vector3(100, 1, 100)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_qc4db")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_8od7v")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("BoxMesh_qc4db")
+
+[node name="Humanoid" parent="." instance=ExtResource("1_lc1oi")]
+transform = Transform3D(0.9834831, -0.18099977, 0, 0.15474378, 0.8408181, 0.5187285, -0.093889736, -0.5101607, 0.85493904, 0.03703022, 13.831506, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-3.7855173e-08, -0.5, 0.8660254, -2.1855694e-08, 0.8660254, 0.5, -1, 0, -4.371139e-08, 14.636096, 11.457919, 0)
