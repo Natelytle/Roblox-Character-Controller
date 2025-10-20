@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://d2rlot30u0beo"
+path="res://.godot/imported/damgeom.obj-d3f380c9e62be407660028b0ae4a186a.mesh"
+
+[deps]
+
+files=["res://.godot/imported/damgeom.obj-d3f380c9e62be407660028b0ae4a186a.mesh"]
+
+source_file="res://Resources/Player/damgeom.obj"
+dest_files=["res://.godot/imported/damgeom.obj-d3f380c9e62be407660028b0ae4a186a.mesh", "res://.godot/imported/damgeom.obj-d3f380c9e62be407660028b0ae4a186a.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

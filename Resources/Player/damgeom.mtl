@@ -1,0 +1,48 @@
+newmtl Damjom61Mtl
+Material Color
+Ka 0.618686 0.618686 0.618686
+Kd 0.618686 0.618686 0.618686
+Ks 0.0388195 0.0388195 0.0388195 
+
+d 1
+
+Ns 0
+
+newmtl Damjom81Mtl
+Material Color
+Ka 1 1 1
+Kd 1 1 1
+Ks 0.0627451 0.0627451 0.0627451 
+
+d 1
+
+Ns 0
+
+map_Ka Damjom81_diff.png
+map_Kd Damjom81_diff.png
+map_d Damjom81_diff.png
+
+newmtl Damjom12Mtl
+Material Color
+Ka 1 1 1
+Kd 1 1 1
+Ks 0.0627451 0.0627451 0.0627451 
+
+d 1
+
+Ns 0
+
+map_Ka Damjom12_diff.png
+map_Kd Damjom12_diff.png
+map_d Damjom12_diff.png
+
+newmtl Meta1q1pmrhe2lhei5hwituojqw443gn5zg2ir2lmycymzmgawdcq11Mtl
+Material Color
+Ka 0.373615 0.368591 0.383775
+Kd 0.373615 0.368591 0.383775
+Ks 0.0234425 0.0231273 0.02408 
+
+d 1
+
+Ns 0
+
