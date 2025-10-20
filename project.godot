@@ -21,4 +21,5 @@ project/assembly_name="Roblox Character Controller"
 
 [physics]
 
+common/physics_ticks_per_second=240
 3d/default_gravity=196.2
