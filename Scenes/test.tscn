@@ -32,6 +32,7 @@ shadow_enabled = true
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+collision_layer = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
 shape = SubResource("BoxShape3D_8od7v")
@@ -41,6 +42,3 @@ mesh = SubResource("BoxMesh_qc4db")
 
 [node name="Humanoid" parent="." instance=ExtResource("1_lc1oi")]
 transform = Transform3D(0.99680674, 0.07965149, 0.0056325556, -0.079753205, 0.9965929, 0.02102101, -0.0039390107, -0.021403076, 0.99976313, 0.03703022, 13.831506, 0)
-
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-3.7855173e-08, -0.5, 0.8660254, -2.1855694e-08, 0.8660254, 0.5, -1, 0, -4.371139e-08, 14.636096, 11.457919, 0)

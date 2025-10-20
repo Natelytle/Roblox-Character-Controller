@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://bfxdxp2q07i43"]
+[gd_scene load_steps=12 format=3 uid="uid://bfxdxp2q07i43"]
 
 [ext_resource type="PackedScene" uid="uid://cuhifk4yy6h30" path="res://Scenes/damian.tscn" id="1_ntsbj"]
+[ext_resource type="Script" uid="uid://b14yfluwyct30" path="res://Scripts/Camera.cs" id="2_r14t2"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ntsbj"]
 friction = 0.3
@@ -137,5 +138,19 @@ external_skeleton = NodePath("../../Avatar/Skeleton3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Hitboxes/Torso/Area3D"]
 shape = SubResource("BoxShape3D_fq6rp")
+
+[node name="Attachments" type="Node3D" parent="."]
+
+[node name="Camera" type="Node3D" parent="Attachments"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+top_level = true
+script = ExtResource("2_r14t2")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Attachments/Camera"]
+collision_mask = 2
+
+[node name="Camera3D" type="Camera3D" parent="Attachments/Camera/SpringArm3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.5)
+fov = 70.0
 
 [editable path="Avatar"]
