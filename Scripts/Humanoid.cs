@@ -23,6 +23,9 @@ public partial class Humanoid : RigidBody3D
 	// Ceiling properties
 	public bool HittingCeiling { get; private set; }
 	
+	// Climbing properties
+	public bool IsClimbing { get; private set; }
+	
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -46,6 +49,7 @@ public partial class Humanoid : RigidBody3D
 	{
 		SetFloorProperties();
 		SetCeilingProperties();
+		SetClimbingProperties();
 	}
 
 	private void SetFloorProperties()
@@ -151,5 +155,59 @@ public partial class Humanoid : RigidBody3D
 				}
 			}
 		}
+	}
+
+	private void SetClimbingProperties()
+	{
+		const float yPositionInitial = -2.7f + 1 / 7.0f;
+		const float yPositionIncrements = 1 / 7.0f;
+		const float zSearchLengthTruss = 1.05f;
+		const float zSearchLengthLadder = 0.7f;
+
+		IsClimbing = false;
+
+		// TODO: Searching for trusses
+		
+		// Searching for ladders
+		bool hitUnderCyanRaycast = false;
+		bool airOverFirstHit = false;
+		int distanceOfAirFromFirstHit = 0;
+		bool redRaysHit = false;
+		bool secondHitExists = false;
+
+		_climbRayCast.TargetPosition = new Vector3(0, 0, -zSearchLengthLadder);
+
+		for (int i = 0; i < 27; i++)
+		{
+			_climbRayCast.Position = new Vector3(0, yPositionInitial + i * yPositionIncrements, 0);
+			_climbRayCast.ForceRaycastUpdate();
+
+			if (i < 3 && _climbRayCast.IsColliding())
+			{
+				redRaysHit = true;
+			}
+
+			if (i < 17 && _climbRayCast.IsColliding())
+			{
+				hitUnderCyanRaycast = true;
+			}
+			
+			if (hitUnderCyanRaycast && _climbRayCast.IsColliding())
+			{
+				distanceOfAirFromFirstHit++;
+			}
+
+			if (hitUnderCyanRaycast && !_climbRayCast.IsColliding() && distanceOfAirFromFirstHit < 17)
+			{
+				airOverFirstHit = true;
+			}
+
+			if (redRaysHit && i < 26 && airOverFirstHit && _climbRayCast.IsColliding())
+			{
+				secondHitExists = true;
+			}
+		}
+
+		IsClimbing = hitUnderCyanRaycast && airOverFirstHit && (!redRaysHit || secondHitExists);
 	}
 }
