@@ -20,6 +20,9 @@ public partial class Humanoid : RigidBody3D
 	public GodotObject? FloorPart { get; private set; }
 	public PhysicsMaterial? FloorMaterial { get; private set; }
 	
+	// Ceiling properties
+	public bool HittingCeiling { get; private set; }
+	
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -42,6 +45,7 @@ public partial class Humanoid : RigidBody3D
 	public override void _PhysicsProcess(double delta)
 	{
 		SetFloorProperties();
+		SetCeilingProperties();
 	}
 
 	private void SetFloorProperties()
@@ -121,5 +125,31 @@ public partial class Humanoid : RigidBody3D
 
 		if (count > 0)
 			FloorDistance = sum / count;
+	}
+
+	private void SetCeilingProperties()
+	{
+		float[] xPositions = [0.8f, -0.8f];
+		float[] zPositions = [-0.45f, 0.45f];
+		const float yPosition = -0.9f;
+		
+		_ceilingRayCast.TargetPosition = new Vector3(0, 4, 0);
+		
+		// Reset ceiling info
+		HittingCeiling = false;
+
+		for (int i = 0; i < 2; i++)
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				_ceilingRayCast.Position = new Vector3(xPositions[i], yPosition, zPositions[j]);
+				_ceilingRayCast.ForceRaycastUpdate();
+
+				if (_ceilingRayCast.IsColliding())
+				{
+					HittingCeiling = true;
+				}
+			}
+		}
 	}
 }
