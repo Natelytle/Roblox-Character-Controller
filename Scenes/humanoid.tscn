@@ -1,5 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://bfxdxp2q07i43"]
+[gd_scene load_steps=13 format=3 uid="uid://bfxdxp2q07i43"]
 
+[ext_resource type="Script" uid="uid://snl42rhevkdv" path="res://Scripts/Humanoid.cs" id="1_hmbta"]
 [ext_resource type="PackedScene" uid="uid://cuhifk4yy6h30" path="res://Scenes/damian.tscn" id="1_ntsbj"]
 [ext_resource type="Script" uid="uid://b14yfluwyct30" path="res://Scripts/Camera.cs" id="2_r14t2"]
 
@@ -36,6 +37,7 @@ mass = 11.2
 physics_material_override = SubResource("PhysicsMaterial_ntsbj")
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, -0.28, 0)
+script = ExtResource("1_hmbta")
 
 [node name="CollisionTorso" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_r14t2")
