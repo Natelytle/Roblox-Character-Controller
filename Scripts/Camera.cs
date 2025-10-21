@@ -10,9 +10,9 @@ public partial class Camera : Node3D
     private const float FirstPersonThreshold = 1.0f;
     private const float ShiftLockOffset = 1.75f;
     
-    private SpringArm3D _springArm;
-    private Camera3D _camera;
-    private Node3D _parent;
+    private SpringArm3D _springArm = null!;
+    private Camera3D _camera = null!;
+    private Node3D _parent = null!;
 
     [Export] public float MouseSensitivity { get; set; } = 1;
     private Vector2 _mousePixelsToUnits = new(0.002f * float.Pi, 0.0015f * float.Pi);
@@ -28,8 +28,8 @@ public partial class Camera : Node3D
     
     public override void _Ready()
     {
-        _springArm = GetNode("SpringArm3D") as SpringArm3D;
-        _camera = GetNode("SpringArm3D/Camera3D") as Camera3D;
+        _springArm = (SpringArm3D)GetNode("SpringArm3D");
+        _camera = (Camera3D)GetNode("SpringArm3D/Camera3D");
         _parent = (Node3D)GetParent();
     }
 
