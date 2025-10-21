@@ -12,6 +12,7 @@ public partial class Camera : Node3D
     
     private SpringArm3D _springArm;
     private Camera3D _camera;
+    private Node3D _parent;
 
     [Export] public float MouseSensitivity { get; set; } = 1;
     private Vector2 _mousePixelsToUnits = new(0.002f * float.Pi, 0.0015f * float.Pi);
@@ -29,14 +30,13 @@ public partial class Camera : Node3D
     {
         _springArm = GetNode("SpringArm3D") as SpringArm3D;
         _camera = GetNode("SpringArm3D/Camera3D") as Camera3D;
+        _parent = (Node3D)GetParent();
     }
 
     public override void _Process(double delta)
     {
-        Node3D parent = (Node3D)GetParent();
-
         // 1.5 is the distance of the head over the attachment node.
-        GlobalPosition = parent.GlobalPosition + parent.GlobalBasis.Y * 1.5f + parent.GlobalBasis.X * _horizontalOffset;
+        GlobalPosition = _parent.GlobalPosition + _parent.GlobalBasis.Y * 1.5f + _parent.GlobalBasis.X * _horizontalOffset;
         
         _springArm.SpringLength = float.Min((GlobalPosition - _camera.GlobalPosition).Length(), _springArm.SpringLength);
 
