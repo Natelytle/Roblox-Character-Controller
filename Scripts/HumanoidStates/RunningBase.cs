@@ -18,8 +18,12 @@ public class RunningBase(string stateName, Humanoid player, StateType priorState
 
         if (Player.FloorNormal is not null)
         {
-            targetMovementVector = new Plane(Player.FloorNormal.Value).Project(targetMovementVector).Normalized();
-            targetMovementVector.Y = 0;
+            Vector3 floorNormal = Player.FloorNormal.Value;
+            Vector3 upSlopeMovementVector = (targetMovementVector - floorNormal * targetMovementVector.Dot(floorNormal)).Normalized();
+            upSlopeMovementVector.Y = 0;
+
+            // Bad hack blah who cares
+            targetMovementVector *= upSlopeMovementVector.Length();
         }
 
         Vector3 target = targetMovementVector * Player.WalkSpeed;
