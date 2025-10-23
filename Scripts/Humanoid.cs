@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using RobloxCharacterController.Scripts.HumanoidStates;
 
 namespace RobloxCharacterController.Scripts;
 
@@ -12,6 +13,14 @@ public partial class Humanoid : RigidBody3D
 	private RayCast3D _ceilingRayCast = null!;
 	private RayCast3D _groundRayCast = null!;
 	private RayCast3D _climbRayCast = null!;
+	
+	private Camera _camera = null!;
+	public AnimationPlayer AnimationPlayer = null!;
+	
+	// Movement properties
+	public Vector3 MoveDirection { get; private set; }
+	public Vector3 Heading { get; private set; }
+	public bool RotationLocked => _camera.RotationLocked;
 
 	// Floor properties
 	public float? FloorDistance { get; private set; }
@@ -26,6 +35,13 @@ public partial class Humanoid : RigidBody3D
 	// Climbing properties
 	public bool IsClimbing { get; private set; }
 	
+	// State Machine
+	[Export]
+	public StateType InitialState { get; set; }
+	
+	public HumanoidState? CurrentState { get; private set; }
+	private StateType _currentStateType;
+	
 	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -38,18 +54,39 @@ public partial class Humanoid : RigidBody3D
 		
 		_climbRayCast = new RayCast3D();
 		AddChild(_climbRayCast);
+		
+		_camera = (Camera)GetNode("Attachments/Camera");
+		AnimationPlayer = (AnimationPlayer)GetNode("Avatar/AnimationPlayer");
+		
+		CurrentState = GetState(InitialState);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		CurrentState?.Process(delta);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (RotationLocked)
+		{
+			Vector3 currentRotation = Rotation;
+			currentRotation.Y = _camera.Rotation.Y;
+			Rotation = currentRotation;
+		}
+		
+		Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
+		MoveDirection = (GlobalBasis.Rotated(Vector3.Up, _camera.Rotation.Y - Rotation.Y) * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
+
+		Heading = new Plane(Vector3.Up).Project(-Basis.Z).Normalized();
+		 
 		SetFloorProperties();
 		SetCeilingProperties();
 		SetClimbingProperties();
+		
+		CurrentState?.PrePhysicsProcess(delta);
+		CurrentState?.PhysicsProcess(delta);
 	}
 
 	private void SetFloorProperties()
@@ -209,5 +246,72 @@ public partial class Humanoid : RigidBody3D
 		}
 
 		IsClimbing = hitUnderCyanRaycast && airOverFirstHit && (!redRaysHit || secondHitExists);
+	}
+	
+	public enum StateType
+	{
+		None,
+		Running,
+		Coyote,
+		Falling,
+		Climbing,
+		StandClimbing,
+		Jumping,
+		Landed
+	}
+
+	private HumanoidState? GetState(StateType stateType)
+	{
+		HumanoidState state;
+        
+		switch (stateType)
+		{
+			case StateType.Running:
+				state = new Running(this, _currentStateType);
+				break;
+			case StateType.Coyote:
+				state = new Coyote(this, _currentStateType);
+				break;
+			case StateType.Falling:
+				state = new Falling(this, _currentStateType);
+				break;
+			// case StateType.Climbing:
+			// 	state = new Climbing(this, _currentStateType);
+			// 	break;
+			// case StateType.StandClimbing:
+			// 	state = new StandClimbing(this, _currentStateType);
+			// 	break;
+			case StateType.Jumping:
+				state = new Jumping(this, _currentStateType);
+				break;
+			case StateType.Landed:
+				state = new Landed(this, _currentStateType);
+				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
+		}
+
+		if (state != null)
+			state.Finished += OnStateFinished;
+        
+		return state;
+	}
+	
+	private void OnStateFinished(HumanoidState state, StateType newStateType)
+	{
+		if (state != CurrentState)
+			return;
+
+		HumanoidState? newState = GetState(newStateType);
+
+		if (newState is null)
+			return;
+
+		CurrentState?.OnExit();
+
+		newState.OnEnter();
+
+		CurrentState = newState;
+		_currentStateType = newStateType;
 	}
 }
