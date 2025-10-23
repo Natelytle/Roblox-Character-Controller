@@ -1,4 +1,5 @@
-﻿using static RobloxCharacterController.Scripts.Humanoid;
+﻿using System.Numerics;
+using static RobloxCharacterController.Scripts.Humanoid;
 
 namespace RobloxCharacterController.Scripts.HumanoidStates;
 
@@ -18,8 +19,9 @@ public class Running(Humanoid player, StateType priorState)
     public override void PhysicsProcess(double delta)
     {
         base.PhysicsProcess(delta);
-        
-        Player.AnimationPlayer.SetSpeedScale(Player.LinearVelocity.Length() / 14.5f);
+
+        Vector3 horizontalSpeed = new Vector3(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
+        Player.AnimationPlayer.SetSpeedScale(horizontalSpeed.Length() / 14.5f);
         
         // Transition to other states
         if (ComputeEvent(EventType.FacingLadder))

@@ -9,6 +9,7 @@ public partial class Humanoid : RigidBody3D
 	[ExportGroup("Movement")] 
 	[Export] public float WalkSpeed { get; private set; } = 16f;
 	[Export] public float JumpPower { get; private set; } = 53f;
+	[Export] public float MaxSlope { get; private set; } = 89.0f;
 
 	private RayCast3D _ceilingRayCast = null!;
 	private RayCast3D _groundRayCast = null!;
@@ -152,15 +153,18 @@ public partial class Humanoid : RigidBody3D
 		const float zPositionSecondary = 0.85f;
 
 		// We have 2 more checks, just do em manually
-		for (int i = -1; i < 2; i += 2)
+		if (sum > 0)
 		{
-			_groundRayCast.Position = new Vector3(0, yPosition, i * zPositionSecondary);
-			_groundRayCast.ForceRaycastUpdate();
-
-			if (_groundRayCast.IsColliding())
+			for (int i = -1; i < 2; i += 2)
 			{
-				sum += _groundRayCast.GlobalPosition.DistanceTo(_groundRayCast.GetCollisionPoint());
-				count++;
+				_groundRayCast.Position = new Vector3(0, yPosition, i * zPositionSecondary);
+				_groundRayCast.ForceRaycastUpdate();
+
+				if (_groundRayCast.IsColliding())
+				{
+					sum += _groundRayCast.GlobalPosition.DistanceTo(_groundRayCast.GetCollisionPoint());
+					count++;
+				}
 			}
 		}
 
