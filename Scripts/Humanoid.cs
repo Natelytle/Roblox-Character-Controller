@@ -22,6 +22,7 @@ public partial class Humanoid : RigidBody3D
 	public Vector3 MoveDirection { get; private set; }
 	public Vector3 Heading { get; private set; }
 	public bool RotationLocked => _camera.RotationLocked;
+	private bool _previouslyRotationLocked;
 
 	// Floor properties
 	public float? FloorDistance { get; private set; }
@@ -92,23 +93,29 @@ public partial class Humanoid : RigidBody3D
 
 	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
 	{
-		if (!RotationLocked)
-			return;
-		
-		float currentYaw = Rotation.Y;
-		float desiredYaw = _camera.Rotation.Y;
-		float angleDelta = Mathf.AngleDifference(currentYaw, desiredYaw);
+		if (RotationLocked)
+		{
+			float currentYaw = Rotation.Y;
+			float desiredYaw = _camera.Rotation.Y;
+			float angleDelta = Mathf.AngleDifference(currentYaw, desiredYaw);
 
-		// Apply rotation to the physics state's transform
-		Transform3D currentTransform = state.Transform;
-		currentTransform.Basis = currentTransform.Basis.Rotated(Vector3.Up, angleDelta);
-		state.Transform = currentTransform;
+			// Apply rotation to the physics state's transform
+			Transform3D currentTransform = state.Transform;
+			currentTransform.Basis = currentTransform.Basis.Rotated(Vector3.Up, angleDelta);
+			state.Transform = currentTransform;
 
-		int sign = float.Sign(angleDelta);
-		float collisionAngularY = -sign * float.Max(angleDelta * 50.0f * float.Sign(sign), state.AngularVelocity.Y * float.Sign(angleDelta));
-		var angularVelocity = state.AngularVelocity;
-		angularVelocity.Y = collisionAngularY;
-		state.AngularVelocity = angularVelocity;
+			// We only add angular velocity when turning in shift lock, not when entering shift lock.
+			if (_previouslyRotationLocked)
+			{
+				int sign = float.Sign(angleDelta);
+				float collisionAngularY = -sign * float.Max(angleDelta * 50.0f * float.Sign(sign), state.AngularVelocity.Y * float.Sign(angleDelta));
+				var angularVelocity = state.AngularVelocity;
+				angularVelocity.Y = collisionAngularY;
+				state.AngularVelocity = angularVelocity;
+			}
+		}
+
+		_previouslyRotationLocked = RotationLocked;
 	}
 
 	private void SetFloorProperties()
