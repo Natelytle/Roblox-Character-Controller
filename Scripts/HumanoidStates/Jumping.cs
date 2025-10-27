@@ -51,8 +51,6 @@ public class Jumping(Humanoid player, StateType priorState)
             InvokeFinished(this, StateType.Falling);
         else if (ComputeEvent(EventType.TimerUp))
             InvokeFinished(this, StateType.Falling);
-        else if (ComputeEvent(EventType.OffFloor))
-            InvokeFinished(this, StateType.Falling);
         else
         {
             Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
@@ -82,5 +80,8 @@ public class Jumping(Humanoid player, StateType priorState)
                 Player.ApplyCentralForce(_jumpDirection * newForceY);
             }
         }
+
+        if (ComputeEvent(EventType.OffFloor))
+            InvokeFinished(this, StateType.Falling);
     }
 }
