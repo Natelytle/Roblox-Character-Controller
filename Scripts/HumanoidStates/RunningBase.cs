@@ -35,8 +35,10 @@ public class RunningBase(string stateName, Humanoid player, StateType priorState
         Player.ApplyCentralForce(correctionForce);
 
         const float hipHeight = 2f;
-        
-        float? desiredYVelocity = 27 * (hipHeight - Player.FloorDistance);
+
+        // Add one because the origin point is one over our character's hips
+        float? desiredAltitude = Player.FloorLocation?.Y + hipHeight + 1;
+        float? desiredYVelocity = 27 * (desiredAltitude - Player.GlobalPosition.Y);
 
         if (desiredYVelocity != null && desiredYVelocity > 0)
         {

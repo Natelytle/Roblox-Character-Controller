@@ -71,7 +71,7 @@ public class Jumping(Humanoid player, StateType priorState)
 
                     if (floorPart is RigidBody3D rigid)
                     {
-                        rigid.ApplyForce(-_jumpDirection * diff, Player.FloorHitLocation - rigid.GlobalPosition);
+                        rigid.ApplyForce(-_jumpDirection * diff, Player.FloorLocation - rigid.GlobalPosition);
                     }
                 }
             }

@@ -52,8 +52,8 @@ public abstract class HumanoidState(string stateName, Humanoid player, StateType
             case EventType.Upright: break;
             case EventType.FacingLadder: returnValue = Player.IsClimbing; break;
             case EventType.AwayLadder: returnValue = !Player.IsClimbing; break;
-            case EventType.OnFloor: returnValue = Player.FloorDistance is not null && Player.LinearVelocity.Y <= 0; break;
-            case EventType.OffFloor: returnValue = Player.FloorDistance is null; break;
+            case EventType.OnFloor: returnValue = Player.FloorPart is not null && Player.LinearVelocity.Y <= 0; break;
+            case EventType.OffFloor: returnValue = Player.FloorPart is null; break;
             case EventType.TimerUp: returnValue = Timer <= 0; break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(eventType), eventType, null);

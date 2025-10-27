@@ -23,16 +23,18 @@ public partial class Humanoid : RigidBody3D
 	public Vector3 Heading { get; private set; }
 	public bool RotationLocked => _camera.RotationLocked;
 	private bool _previouslyRotationLocked;
-
-	// Floor properties
-	public float? FloorDistance { get; private set; }
-	public Vector3? FloorNormal { get; private set; }
-	public Vector3? FloorHitLocation { get; private set; }
-	public GodotObject? FloorPart { get; private set; }
-	public PhysicsMaterial? FloorMaterial { get; private set; }
+	
+	// Force properties
 	public Vector3 CurrentForce => (_currentVelocity - _previousVelocity) * Mass;
 	private Vector3 _currentVelocity = Vector3.Zero;
 	private Vector3 _previousVelocity = Vector3.Zero;
+
+	// Floor properties
+	public Vector3? FloorNormal { get; private set; }
+	public Vector3? FloorLocation { get; private set; }
+	public Vector3? FloorVelocity { get; private set; }
+	public GodotObject? FloorPart { get; private set; }
+	public PhysicsMaterial? FloorMaterial { get; private set; }
 	
 	// Ceiling properties
 	public bool HittingCeiling { get; private set; }
@@ -121,24 +123,24 @@ public partial class Humanoid : RigidBody3D
 	private void SetFloorProperties()
 	{
 		float[] xPositions = [0, 0.8f, -0.8f];
-		float[] zPositions = [0, -0.45f, 0.45f];
+		float[] zPositions = [0, -0.4f, 0.4f];
 		const float yPosition = -0.9f;
 		
 		// Get the raycast length depending on if we had a floor last frame.
-		float length = FloorDistance is not null ? 1.5f : 1.1f;
+		float length = FloorPart is not null ? 1.5f : 1.1f;
 		length += Math.Abs(LinearVelocity.Y) > 100 ? Math.Abs(LinearVelocity.Y) / 100.0f : 0;
 		length = length * 2 + 1;
 
 		_groundRayCast.TargetPosition = new Vector3(0, -length, 0);
 		
 		// Reset floor info
-		FloorDistance = null;
 		FloorNormal = null;
-		FloorHitLocation = null;
+		FloorLocation = null;
 		FloorMaterial = null;
 		FloorPart = null;
+		FloorVelocity = null;
 
-		float sum = 0;
+		Vector3 floorHitLocationSum = Vector3.Zero;
 		int count = 0;
 
 		// Check the center, then the sides.
@@ -155,16 +157,17 @@ public partial class Humanoid : RigidBody3D
 
 				if (_groundRayCast.IsColliding())
 				{
-					sum += _groundRayCast.GlobalPosition.DistanceTo(_groundRayCast.GetCollisionPoint());
-					count++;
-
 					Vector3 hitNormal = _groundRayCast.GetCollisionNormal();
 					
-					if (hitNormal.AngleTo(Vector3.Up) > float.DegreesToRadians(MaxSlope))
+					// Ignore walls
+					if (hitNormal.AngleTo(Vector3.Up) > float.DegreesToRadians(89.9f))
 						continue;
 
+					floorHitLocationSum += _groundRayCast.GetCollisionPoint();
+					count++;
+
 					FloorNormal ??= _groundRayCast.GetCollisionNormal();
-					FloorHitLocation ??= _groundRayCast.GetCollisionPoint();
+					FloorLocation ??= _groundRayCast.GetCollisionPoint();
 					FloorPart ??= _groundRayCast.GetCollider();
 
 					if (FloorMaterial is null && FloorPart is not null)
@@ -183,10 +186,10 @@ public partial class Humanoid : RigidBody3D
 				break;
 		}
 		
-		const float zPositionSecondary = 0.85f;
+		const float zPositionSecondary = 0.8f;
 
 		// We have 2 more checks, just do em manually
-		if (sum > 0)
+		if (floorHitLocationSum.LengthSquared() > 0)
 		{
 			for (int i = -1; i < 2; i += 2)
 			{
@@ -195,14 +198,18 @@ public partial class Humanoid : RigidBody3D
 
 				if (_groundRayCast.IsColliding())
 				{
-					sum += _groundRayCast.GlobalPosition.DistanceTo(_groundRayCast.GetCollisionPoint());
+					floorHitLocationSum += _groundRayCast.GetCollisionPoint();
 					count++;
 				}
 			}
 		}
 
 		if (count > 0)
-			FloorDistance = sum / count;
+			FloorLocation = floorHitLocationSum / count;
+		
+		// Get the velocity of the floor under us
+		if (FloorPart is RigidBody3D rigid && FloorLocation is not null)
+			FloorVelocity = rigid.LinearVelocity + rigid.AngularVelocity.Cross(FloorLocation.Value - rigid.GlobalPosition);
 	}
 
 	private void SetCeilingProperties()
