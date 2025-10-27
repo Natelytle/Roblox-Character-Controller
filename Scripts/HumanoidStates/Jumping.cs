@@ -10,6 +10,8 @@ public class Jumping(Humanoid player, StateType priorState)
     private Vector3 _jumpDirection;
     private readonly StateType _priorState = priorState;
 
+    private int jumpFrames;
+
     public override void OnEnter()
     {
         if (_priorState is StateType.Climbing or StateType.StandClimbing)
@@ -24,6 +26,8 @@ public class Jumping(Humanoid player, StateType priorState)
         }
 
         Timer = 0.5;
+
+        jumpFrames = 0;
     }
 
     public override void OnExit()
@@ -40,8 +44,6 @@ public class Jumping(Humanoid player, StateType priorState)
         float desiredVelocity = 53;
         
         float yAccelDesired = float.Round(1 / (float)delta) * (desiredVelocity - jumpVelocity);
-        
-        Console.WriteLine(jumpVelocity);
         
         if (Player.HittingCeiling)
             InvokeFinished(this, StateType.Falling);
