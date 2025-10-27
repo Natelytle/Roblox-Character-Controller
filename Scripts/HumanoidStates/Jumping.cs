@@ -1,4 +1,5 @@
-﻿using Godot;
+﻿using System;
+using Godot;
 using static RobloxCharacterController.Scripts.Humanoid;
 
 namespace RobloxCharacterController.Scripts.HumanoidStates;
@@ -21,6 +22,8 @@ public class Jumping(Humanoid player, StateType priorState)
         {
             _jumpDirection = Vector3.Up;
         }
+
+        Timer = 0.5;
     }
 
     public override void OnExit()
@@ -33,8 +36,49 @@ public class Jumping(Humanoid player, StateType priorState)
 
     public override void PhysicsProcess(double delta)
     {
-        Player.SetAxisVelocity(_jumpDirection * Player.JumpPower);
+        float jumpVelocity = Player.LinearVelocity.Dot(_jumpDirection);
+        float desiredVelocity = 53;
+        
+        float yAccelDesired = float.Round(1 / (float)delta) * (desiredVelocity - jumpVelocity);
+        
+        Console.WriteLine(jumpVelocity);
+        
+        if (Player.HittingCeiling)
+            InvokeFinished(this, StateType.Falling);
+        else if (yAccelDesired <= 0)
+            InvokeFinished(this, StateType.Falling);
+        else if (ComputeEvent(EventType.TimerUp))
+            InvokeFinished(this, StateType.Falling);
+        else if (ComputeEvent(EventType.OffFloor))
+            InvokeFinished(this, StateType.Falling);
+        else
+        {
+            Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
+            GodotObject? floorPart = Player.FloorPart;
 
-        InvokeFinished(this, StateType.Falling);
+            if (floorPart is not null)
+            {
+                float newForceY = Player.Mass * yAccelDesired;
+                float currentForceY = Player.CurrentForce.Y;
+
+                if (newForceY > currentForceY)
+                {
+                    float diff = newForceY - currentForceY;
+                    
+                    Player.ApplyCentralForce(_jumpDirection * newForceY);
+
+                    if (floorPart is RigidBody3D rigid)
+                    {
+                        rigid.ApplyForce(-_jumpDirection * diff, Player.FloorHitLocation - rigid.GlobalPosition);
+                    }
+                }
+            }
+            else
+            {
+                float newForceY = Player.Mass * yAccelDesired;
+
+                Player.ApplyCentralForce(_jumpDirection * newForceY);
+            }
+        }
     }
 }

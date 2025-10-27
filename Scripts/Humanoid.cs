@@ -29,6 +29,9 @@ public partial class Humanoid : RigidBody3D
 	public Vector3? FloorHitLocation { get; private set; }
 	public GodotObject? FloorPart { get; private set; }
 	public PhysicsMaterial? FloorMaterial { get; private set; }
+	public Vector3 CurrentForce => (_currentVelocity - _previousVelocity) * Mass;
+	private Vector3 _currentVelocity = Vector3.Zero;
+	private Vector3 _previousVelocity = Vector3.Zero;
 	
 	// Ceiling properties
 	public bool HittingCeiling { get; private set; }
@@ -78,6 +81,10 @@ public partial class Humanoid : RigidBody3D
 		SetFloorProperties();
 		SetCeilingProperties();
 		SetClimbingProperties();
+		
+		// Set these before we process state for a one frame delay instead of 2
+		_previousVelocity = _currentVelocity;
+		_currentVelocity = LinearVelocity;
 		
 		CurrentState?.PrePhysicsProcess(delta);
 		CurrentState?.PhysicsProcess(delta);
