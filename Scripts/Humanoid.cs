@@ -158,6 +158,11 @@ public partial class Humanoid : RigidBody3D
 					sum += _groundRayCast.GlobalPosition.DistanceTo(_groundRayCast.GetCollisionPoint());
 					count++;
 
+					Vector3 hitNormal = _groundRayCast.GetCollisionNormal();
+					
+					if (hitNormal.AngleTo(Vector3.Up) > float.DegreesToRadians(MaxSlope))
+						continue;
+
 					FloorNormal ??= _groundRayCast.GetCollisionNormal();
 					FloorHitLocation ??= _groundRayCast.GetCollisionPoint();
 					FloorPart ??= _groundRayCast.GetCollider();
