@@ -99,9 +99,6 @@ public partial class Humanoid : RigidBody3D
 
 		int sign = float.Sign(angleDelta);
 		float collisionAngularY = -sign * float.Max(angleDelta * 50.0f * float.Sign(sign), state.AngularVelocity.Y * float.Sign(angleDelta));
-		
-		Console.WriteLine(collisionAngularY);
-
 		var angularVelocity = state.AngularVelocity;
 		angularVelocity.Y = collisionAngularY;
 		state.AngularVelocity = angularVelocity;
