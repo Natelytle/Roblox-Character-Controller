@@ -70,13 +70,6 @@ public partial class Humanoid : RigidBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (RotationLocked)
-		{
-			Vector3 currentRotation = Rotation;
-			currentRotation.Y = _camera.Rotation.Y;
-			Rotation = currentRotation;
-		}
-		
 		Vector2 inputDir = Input.GetVector("left", "right", "forward", "backward");
 		MoveDirection = (GlobalBasis.Rotated(Vector3.Up, _camera.Rotation.Y - Rotation.Y) * new Vector3(inputDir.X, 0, inputDir.Y)).Normalized();
 
@@ -88,6 +81,30 @@ public partial class Humanoid : RigidBody3D
 		
 		CurrentState?.PrePhysicsProcess(delta);
 		CurrentState?.PhysicsProcess(delta);
+	}
+
+	public override void _IntegrateForces(PhysicsDirectBodyState3D state)
+	{
+		if (!RotationLocked)
+			return;
+		
+		float currentYaw = Rotation.Y;
+		float desiredYaw = _camera.Rotation.Y;
+		float angleDelta = Mathf.AngleDifference(currentYaw, desiredYaw);
+
+		// Apply rotation to the physics state's transform
+		Transform3D currentTransform = state.Transform;
+		currentTransform.Basis = currentTransform.Basis.Rotated(Vector3.Up, angleDelta);
+		state.Transform = currentTransform;
+
+		int sign = float.Sign(angleDelta);
+		float collisionAngularY = -sign * float.Max(angleDelta * 50.0f * float.Sign(sign), state.AngularVelocity.Y * float.Sign(angleDelta));
+		
+		Console.WriteLine(collisionAngularY);
+
+		var angularVelocity = state.AngularVelocity;
+		angularVelocity.Y = collisionAngularY;
+		state.AngularVelocity = angularVelocity;
 	}
 
 	private void SetFloorProperties()
@@ -250,6 +267,11 @@ public partial class Humanoid : RigidBody3D
 		}
 
 		IsClimbing = hitUnderCyanRaycast && airOverFirstHit && (!redRaysHit || secondHitExists);
+	}
+
+	private void UpdateHitboxes()
+	{
+		
 	}
 	
 	public enum StateType
