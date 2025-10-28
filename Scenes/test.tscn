@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://ct0o5n5lkbcm6"]
+[gd_scene load_steps=15 format=3 uid="uid://ct0o5n5lkbcm6"]
 
 [ext_resource type="PackedScene" uid="uid://bfxdxp2q07i43" path="res://Scenes/humanoid.tscn" id="1_lc1oi"]
 
@@ -22,15 +22,29 @@ size = Vector3(100, 1, 100)
 size = Vector3(100, 1, 100)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lc1oi"]
-size = Vector3(1, 21, 100)
+size = Vector3(1, 11, 100)
 
 [sub_resource type="BoxMesh" id="BoxMesh_8od7v"]
-size = Vector3(1, 21, 100)
+size = Vector3(1, 11, 100)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lc1oi"]
 radius = 4.0
 
 [sub_resource type="SphereMesh" id="SphereMesh_8od7v"]
+radius = 4.0
+height = 8.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8od7v"]
+radius = 2.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_qc4db"]
+radius = 2.0
+height = 4.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_qc4db"]
+radius = 4.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_ys1qc"]
 radius = 4.0
 height = 8.0
 
@@ -54,7 +68,7 @@ shape = SubResource("BoxShape3D_8od7v")
 mesh = SubResource("BoxMesh_qc4db")
 
 [node name="StaticBody3D2" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 9, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 4, 0)
 collision_layer = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
@@ -82,6 +96,28 @@ shape = SubResource("SphereShape3D_lc1oi")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D4"]
 mesh = SubResource("SphereMesh_8od7v")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(-4.371139e-08, -1, 0, 0.70710677, -3.090862e-08, 0.70710677, -0.70710677, 3.090862e-08, 0.70710677, -7, 3, -15)
+collision_layer = 3
+mass = 10.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("SphereShape3D_8od7v")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D"]
+mesh = SubResource("SphereMesh_qc4db")
+
+[node name="RigidBody3D2" type="RigidBody3D" parent="."]
+transform = Transform3D(-4.371139e-08, -1, 0, 0.70710677, -3.090862e-08, 0.70710677, -0.70710677, 3.090862e-08, 0.70710677, -14, 6, -15)
+collision_layer = 3
+mass = 40.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2"]
+shape = SubResource("SphereShape3D_qc4db")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="RigidBody3D2"]
+mesh = SubResource("SphereMesh_ys1qc")
 
 [node name="Humanoid" parent="." instance=ExtResource("1_lc1oi")]
 transform = Transform3D(0.99680674, 0.07965149, 0.0056325556, -0.079753205, 0.9965929, 0.02102101, -0.0039390107, -0.021403076, 0.99976313, 0.03703022, 13.831506, 0)

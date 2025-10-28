@@ -28,11 +28,20 @@ public class RunningBase(string stateName, Humanoid player, StateType priorState
 
         Vector3 target = targetMovementVector * Player.WalkSpeed;
 
+        Vector3 horizontalFloorVelocity = Player.FloorVelocity ?? Vector3.Zero;
+        horizontalFloorVelocity.Y = 0;
+        target += horizontalFloorVelocity;
+
         Vector3 correctionVector = target - new Vector3(Player.LinearVelocity.X, 0, Player.LinearVelocity.Z);
         correctionVector = correctionVector.Normalized() * Math.Min(MaxForce, Gain * correctionVector.Length());
         Vector3 correctionForce = correctionVector * Player.Mass;
         
         Player.ApplyCentralForce(correctionForce);
+        
+        if (Player.FloorPart is RigidBody3D rigid)
+        {
+            rigid.ApplyForce(-correctionForce, Player.FloorLocation - rigid.GlobalPosition);
+        }
 
         const float hipHeight = 2f;
 
@@ -43,10 +52,13 @@ public class RunningBase(string stateName, Humanoid player, StateType priorState
         if (desiredYVelocity != null && desiredYVelocity > 0)
         {
             Player.ApplyCentralForce(-Player.GetGravity() * Player.Mass);
-
             float desiredForce = 110 * (desiredYVelocity.Value - Player.LinearVelocity.Y) * Player.Mass;
-        
             Player.ApplyCentralForce(Vector3.Up * desiredForce);
+
+            if (Player.FloorPart is RigidBody3D rigid2)
+            {
+                rigid2.ApplyForce(Vector3.Down * desiredForce, Player.FloorLocation - rigid2.GlobalPosition);
+            }
         }
 
         if (!Player.RotationLocked)
